@@ -50,7 +50,7 @@
 
 <p>Sensors were placed on the subjects' belts, armbands, glove and dumbbells, as described below:</p>
 
-<p><img src="html/on-body-sensing-schema.png" alt="Sensor placement schema"></p>
+<p><img src="images/on-body-sensing-schema.png" alt="Sensor placement schema"></p>
 
 <p>Citation Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013. Read more: <a href="http://groupware.les.inf.puc-rio.br/har#ixzz34dpS6ok">http://groupware.les.inf.puc-rio.br/har#ixzz34dpS6oks</a></p>
 
@@ -178,7 +178,7 @@ gscatter(1:height(Xtrain),Xtrain.roll_belt,users,'bgrcmy','o',5,'off')
 ylabel('roll belt'); xlabel('index'); title('Colored by 6 users')
 </code></pre>
 
-<p><img src="html/HAR_01.png" alt="4 features colored by activity type"><img src="html/HAR_02.png" alt="1st feature colored by user"></p>
+<p><img src="images/HAR_01.png" alt="4 features colored by activity type"><img src="images/HAR_02.png" alt="1st feature colored by user"></p>
 
 <h2>
 <a name="predictive-modeling-with-random-forest" class="anchor" href="#predictive-modeling-with-random-forest"><span class="octicon octicon-link"></span></a>Predictive Modeling with Random Forest</h2>
@@ -257,7 +257,7 @@ xlabel('Number of Grown Trees');
 ylabel('Out-of-Bag Classification Error');
 </code></pre>
 
-<p><img src="html/HAR_03.png" alt="Misclassification Error Plot"></p>
+<p><img src="images/HAR_03.png" alt="Misclassification Error Plot"></p>
 
 <h2>
 <a name="variable-importance" class="anchor" href="#variable-importance"><span class="octicon octicon-link"></span></a>Variable Importance</h2>
@@ -283,7 +283,7 @@ set(gca, 'YTickLabel',labels, 'YTick',1:numel(labels))
 title('Variable Importance'); xlabel('score')
 </code></pre>
 
-<p><img src="html/HAR_04.png" alt="Variable Importance Plot"></p>
+<p><img src="images/HAR_04.png" alt="Variable Importance Plot"></p>
 
 <h2>
 <a name="evaluate-trade-off-with-roc-plot" class="anchor" href="#evaluate-trade-off-with-roc-plot"><span class="octicon octicon-link"></span></a>Evaluate trade-off with ROC plot</h2>
@@ -335,7 +335,7 @@ title(sprintf('ROC curve for Class ''%s'', predicted vs. actual',posLabel))
 legend(curves,labels,'Location','East');
 </code></pre>
 
-<p><img src="html/HAR_05.png" alt="ROC Plot"></p>
+<p><img src="images/HAR_05.png" alt="ROC Plot"></p>
 
 <h2>
 <a name="the-reduced-model-with-12-features" class="anchor" href="#the-reduced-model-with-12-features"><span class="octicon octicon-link"></span></a>The reduced model with 12 features</h2>
@@ -400,7 +400,7 @@ Prediction accuracy on the test set: 0.991335
 
 <p>Finally, I have never tried this before, but you could generate C code out of MATLAB to incorporate it into an iPhone app. Watch this webinar for more details. I believe there will be an Android version of this webinar eventually. <a href="http://www.mathworks.com/videos/matlab-to-iphone-made-easy-90834.html">MATLAB to iPhone Made Easy</a></p>
 
-<p><img src="html/iphoneWebinar.png" alt="MATLAB to iPhone Made Easy Webinar"></p>
+<p><img src="images/iphoneWebinar.png" alt="MATLAB to iPhone Made Easy Webinar"></p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/toshiakit">toshiakit</a></p>
