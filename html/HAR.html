@@ -1,0 +1,681 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Analyzing Health and Fitness Data from Wearable Devices in MATLAB</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-15"><meta name="DC.source" content="HAR.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Analyzing Health and Fitness Data from Wearable Devices in MATLAB</h1><!--introduction--><p>Collecting and tracking health and fitness data with smartphones and wearable devices is about to become a mainstream as the internet giants like Apple, Google and Samsung jumping into the fray. But if you collect data, what's the point if you don't analyze it!</p><p>I would like to use a publicly available dataset about weight lifting and pretend that we are going to build a mobile app to advise end users whether they are performing the exercise correctly, and if not, which common mistakes they are making. We will use machine learning/predictive modeling technique called 'Random Forest' popularized by Kaggle competitions to detect user activity patterns.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Dataset to analyze</a></li><li><a href="#2">Partition the dataset for cross validation</a></li><li><a href="#3">Clean and normalize the dataset</a></li><li><a href="#4">Exploratory Data Analysis</a></li><li><a href="#5">Predictive Modeling with Random Forest</a></li><li><a href="#6">Plot misclassification errors by number of trees</a></li><li><a href="#7">Variable Importance</a></li><li><a href="#8">Evaluate trade-off with ROC plot</a></li><li><a href="#9">The reduced model with 12 features</a></li><li><a href="#10">Conclusion and the next steps - integrate your code into your app</a></li></ul></div><h2>Dataset to analyze<a name="1"></a></h2><p><a href="http://groupware.les.inf.puc-rio.br/har">Human Activity Recognition (HAR)</a> Weight Lifting Exercise Dataset provides measurements to determine "how well an activity was performed". Six subjects performed one set of 10 Unilateral Dumbbell Biceps Curl in 5 different ways.</p><div><ol><li>exactly according to the specification (Class A)</li><li>throwing the elbows to the front (Class B)</li><li>lifting the dumbbell only halfway (Class C)</li><li>lowering the dumbbell only halfway (Class D)</li><li>throwing the hips to the front (Class E)</li></ol></div><p>All together 39,242 samples with 159 variables are available in the original dataset, but we will use a reduced subset of 19,622 samples.</p><p>Sensors were placed on the subjects' belts, armbands, glove and dumbbells, as described below:</p><p><img vspace="5" hspace="5" src="on-body-sensing-schema.png" alt=""> </p><p><b>Citation</b> Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013. Read more: <a href="http://groupware.les.inf.puc-rio.br/har#ixzz34dpS6oks">http://groupware.les.inf.puc-rio.br/har#ixzz34dpS6oks</a></p><pre class="codeinput"><span class="comment">% load the dataset</span>
+<span class="comment">% T = readtable('WearableComputing_weight_lifting_exercises_biceps_curl_variations.csv','TreatAsEmpty','NA');</span>
+T = readtable(<span class="string">'subset.csv'</span>,<span class="string">'TreatAsEmpty'</span>,<span class="string">'NA'</span>); <span class="comment">% use a subset instead</span>
+
+<span class="comment">% separate the classification label from the predictor variables</span>
+class = categorical(T.classe); T.classe = [];
+fprintf(<span class="string">'Num samples in data   : %d\n'</span>,height(T))
+fprintf(<span class="string">'Num predictors in data: %d\n\n'</span>,width(T))
+</pre><pre class="codeoutput">Num samples in data   : 19622
+Num predictors in data: 158
+
+</pre><h2>Partition the dataset for cross validation<a name="2"></a></h2><p>One of the key techniques you use in predictive modeling or machine learning is <a href="http://en.wikipedia.org/wiki/Cross-validation_%28statistics%29">cross validation</a>. Roughly speaking, you hold out part of available data for testing later, and build models using the remaining dataset. The held out set is called 'test set' and the set we will use for modeling is called 'training set'. This makes it more difficult to <a href="http://en.wikipedia.org/wiki/Overfitting">overfit</a> your model, because you can test your model against the data you didn't use in the modeling process.</p><pre class="codeinput"><span class="comment">% Set the random number seed to make the results repeatable</span>
+rng(<span class="string">'default'</span>);
+
+<span class="comment">% Partition the dataset to a 80:20 split</span>
+cv = cvpartition(height(T),<span class="string">'holdout'</span>,0.20);
+
+<span class="comment">% Training set</span>
+Xtrain = T(training(cv),:);
+Ytrain = class(training(cv));
+fprintf(<span class="string">'\nTraining Set\n'</span>)
+tabulate(Ytrain)
+
+<span class="comment">% Test set</span>
+Xtest = T(test(cv),:);
+Ytest = class(test(cv));
+fprintf(<span class="string">'\nTest Set\n'</span>)
+tabulate(Ytest)
+</pre><pre class="codeoutput">
+Training Set
+  Value    Count   Percent
+      A     4446     28.32%
+      B     3064     19.52%
+      C     2771     17.65%
+      D     2557     16.29%
+      E     2860     18.22%
+
+Test Set
+  Value    Count   Percent
+      A     1134     28.90%
+      B      733     18.68%
+      C      651     16.59%
+      D      659     16.79%
+      E      747     19.04%
+</pre><h2>Clean and normalize the dataset<a name="3"></a></h2><p>Raw data is never clean, so you need to check for missing values and transform data into usable form. If the range of values differ substantially from one variable to another, it can affect the machine learning algorithms. Therefore we normalize the data as well.</p><pre class="codeinput"><span class="comment">%  check for missing values</span>
+missingVals = sum(ismissing(Xtrain));
+fprintf(<span class="string">'\nNum vars with missind vals: %d\n'</span>,sum(missingVals &gt; 0))
+fprintf(<span class="string">'Max num missing vals      : %d/%d\n'</span>,max(missingVals),height(Xtrain))
+fprintf(<span class="string">'Avg num missing vals      : %d/%d\n\n'</span>,mean(missingVals(missingVals &gt; 0)),height(Xtrain))
+
+<span class="comment">% too many values missing for those variables to be useful</span>
+<span class="comment">% dropping vars with missing values</span>
+Xtrain = Xtrain(:,missingVals == 0); Xtest = Xtest(:,missingVals == 0);
+
+<span class="comment">% separate users</span>
+users = double(categorical(Xtrain.user_name));
+
+<span class="comment">% remove user name, time stamps, etc.</span>
+Xtrain(:,1:6) =[]; Xtest(:,1:6) =[];
+
+<span class="comment">% apply normalization to each variable in training set</span>
+arr = table2array(Xtrain); mu = mean(arr); sigma = std(arr);
+shiftMean2zero = bsxfun(@minus,arr,mu);
+scalebySigma = bsxfun(@rdivide,shiftMean2zero,sigma);
+Xtrain = array2table(scalebySigma,<span class="string">'VariableNames'</span>,Xtrain.Properties.VariableNames);
+
+<span class="comment">% apply normalzation to each variable in test set</span>
+<span class="comment">% with mu and sigma from training set (because test set mu and sigma will</span>
+<span class="comment">% not be available in actual predictive use of the model).</span>
+arr = table2array(Xtest);
+shiftMean2zero = bsxfun(@minus,arr,mu);
+scalebySigma = bsxfun(@rdivide,shiftMean2zero,sigma);
+Xtest = array2table(scalebySigma,<span class="string">'VariableNames'</span>,Xtest.Properties.VariableNames);
+disp(<span class="string">'Vars with missing vals and others removed.'</span>)
+</pre><pre class="codeoutput">
+Num vars with missind vals: 100
+Max num missing vals      : 15365/15698
+Avg num missing vals      : 15365/15698
+
+Vars with missing vals and others removed.
+</pre><h2>Exploratory Data Analysis<a name="4"></a></h2><p>You begin exploratory data analysis by plotting the variables in order to get oriented with the dataset. Plots of the first four variables show that:</p><div><ol><li>data is sorted by class - requires random reshuffling.</li><li>data points cluster around a few different mean values - indicating that measurements were taken by devices calibrated in a few different ways. The following plot shows the first variable by users, and it is clear that one group used one calibration and another group used a different one.</li><li>those variables exhibit a distinct patterns for Class E (colored in magenta)- those variables will be useful to isolate it.</li></ol></div><pre class="codeinput">figure
+subplot(2,2,1)
+gscatter(1:height(Xtrain),Xtrain.roll_belt,Ytrain,<span class="string">'bgrcm'</span>,<span class="string">'o'</span>,5,<span class="string">'off'</span>)
+xlim([1 height(Xtrain)]);title(<span class="string">'Colored by 5 activity type'</span>)
+subplot(2,2,2)
+gscatter(1:height(Xtrain),Xtrain.pitch_belt,Ytrain,<span class="string">'bgrcm'</span>,<span class="string">'o'</span>,5,<span class="string">'off'</span>)
+xlim([1 height(Xtrain)]);title(<span class="string">'Colored by 5 activity type'</span>)
+subplot(2,2,3)
+gscatter(1:height(Xtrain),Xtrain.yaw_belt,Ytrain,<span class="string">'bgrcm'</span>,<span class="string">'o'</span>,5,<span class="string">'off'</span>)
+xlim([1 height(Xtrain)]);title(<span class="string">'Colored by 5 activity type'</span>)
+subplot(2,2,4)
+gscatter(1:height(Xtrain),Xtrain.total_accel_belt,Ytrain,<span class="string">'bgrcm'</span>,<span class="string">'o'</span>,5,<span class="string">'off'</span>)
+xlim([1 height(Xtrain)]);title(<span class="string">'Colored by 5 activity types'</span>)
+
+<span class="comment">% plot the first variable by user</span>
+figure
+gscatter(1:height(Xtrain),Xtrain.roll_belt,users,<span class="string">'bgrcmy'</span>,<span class="string">'o'</span>,5,<span class="string">'off'</span>)
+ylabel(<span class="string">'roll belt'</span>); xlabel(<span class="string">'index'</span>); title(<span class="string">'Colored by 6 users'</span>)
+</pre><img vspace="5" hspace="5" src="HAR_01.png" alt=""> <img vspace="5" hspace="5" src="HAR_02.png" alt=""> <h2>Predictive Modeling with Random Forest<a name="5"></a></h2><p>The dataset has a bit of issues with calibration. We could further preprocess the data in order to remove calibration gaps. This time, however, I would like to use the dataset as is and use a highly flexible algorithm called <a href="http://en.wikipedia.org/wiki/Random_forest">Random Forest</a>. In MATLAB, this algorithm is implemented in <a href="http://www.mathworks.com/help/stats/treebagger.html">TreeBagger</a> class available in <a href="http://www.mathworks.com/products/statistics/">Statistics Toolbox</a>.</p><p>Random Forest became popular particularly after it was used by number of winners in <a href="http://www.kaggle.com">Kaggle competitions</a>. It uses a large ensemble of decision trees (thus 'forest') trained on different subset of data and uses majority votes of those trees to predict the result. It tend to produce a highly accurate result, but the complexity of the algorithm makes it slow and difficult to interpret.</p><p>To accelerate the computation, I will enable parallel option supported on <a href="http://www.mathworks.com/products/parallel-computing/">Parallel Computing Toolbox</a>. You can comment out unnecessary code if you don't use it.</p><p>Once the model is built, you will see the <a href="http://www.mathworks.com/help/stats/confusionmat.html">confusion matrix</a> that compares the actual class labels to predicted class labels. If everything line up on a diagonal line, then you got 100% accuracy. Off-diagonal numbers are misclassification errors.</p><p>The model has a very high prediction accuracy even though we saw earlier that our dataset was not as problem free as we would like.</p><pre class="codeinput"><span class="comment">% initialize parallel option - comment out if you don't use parallel</span>
+poolobj = gcp(<span class="string">'nocreate'</span>); <span class="comment">% don't create a new pool even if no pool exits</span>
+<span class="keyword">if</span> isempty(poolobj)
+    parpool(<span class="string">'local'</span>,2)
+<span class="keyword">end</span>
+opts = statset(<span class="string">'UseParallel'</span>,true);
+
+<span class="comment">% reshuffle the dataset</span>
+randidx = randperm(height(Xtrain));
+Xtrain = Xtrain(randidx,:);
+Ytrain = Ytrain(randidx);
+
+<span class="comment">% create a random forest model with 100 trees, parallel enabled...</span>
+rfmodel = TreeBagger(100,table2array(Xtrain),Ytrain,<span class="string">'options'</span>,opts,<span class="keyword">...</span>
+    <span class="string">'Method'</span>,<span class="string">'classification'</span>,<span class="string">'oobvarimp'</span>,<span class="string">'on'</span>);
+<span class="comment">% non-parallel version of the same model</span>
+<span class="comment">% rfmodel = TreeBagger(100,table2array(Xtrain),Ytrain,...</span>
+<span class="comment">%     'Method','classification','oobpre','on','oobvarimp','on');</span>
+
+<span class="comment">% predict the class labels for test set</span>
+[Ypred,Yscore]= predict(rfmodel,table2array(Xtest));
+
+<span class="comment">% compute the confusion matrix and prediction accuracy</span>
+C = confusionmat(Ytest,categorical(Ypred));
+disp(array2table(C,<span class="string">'VariableNames'</span>,rfmodel.ClassNames,<span class="string">'RowNames'</span>,rfmodel.ClassNames))
+fprintf(<span class="string">'Prediction accuracy on test set: %f\n\n'</span>, sum(C(logical(eye(5))))/sum(sum(C)))
+</pre><pre class="codeoutput">Starting parallel pool (parpool) using the 'local' profile ... connected to 2 workers.
+
+ans = 
+
+ Pool with properties: 
+
+            Connected: true
+           NumWorkers: 2
+              Cluster: local
+        AttachedFiles: {}
+          IdleTimeout: 30 minute(s) (30 minutes remaining)
+          SpmdEnabled: true
+
+          A       B      C      D      E 
+         ____    ___    ___    ___    ___
+
+    A    1133      0      0      0      1
+    B       3    730      0      0      0
+    C       0      6    643      2      0
+    D       0      0     10    649      0
+    E       0      0      0      5    742
+
+Prediction accuracy on test set: 0.993119
+
+</pre><h2>Plot misclassification errors by number of trees<a name="6"></a></h2><p>I happened to pick 100 trees in the model, but you can check the misclassification errors relative to the number of trees used in prediction. The plot shows that 100 is an overkill - we could use fewer trees and that will make it go faster.</p><pre class="codeinput">figure
+plot(oobError(rfmodel));
+xlabel(<span class="string">'Number of Grown Trees'</span>);
+ylabel(<span class="string">'Out-of-Bag Classification Error'</span>);
+</pre><img vspace="5" hspace="5" src="HAR_03.png" alt=""> <h2>Variable Importance<a name="7"></a></h2><p>One major criticism of Random Forest is that it is a black box algorithms and not easy to understand what it is doing. However, Random Forest can provide variable importance measure, which correspond to the change in prediction error with and without the presence of that variable in the model.</p><p>For our hypothetical weight lifting trainer mobile app, Random Forest would be too cumbersome and slow to implement, so you want to use a simpler prediction model with fewer predictor variables. Random Forest can help you with selecting which predictors you can drop without sacrificing the prediction accuracy too much.</p><p>Let's see how you can do this with TreeBagger.</p><pre class="codeinput"><span class="comment">% get the variable importance scores and sort it.</span>
+vars = Xtrain.Properties.VariableNames;
+<span class="comment">% because we turned 'oobvarimp' to 'on', the model contains</span>
+<span class="comment">% OOBPermutedVarDeltaError that acts as variable importance measure</span>
+varimp = rfmodel.OOBPermutedVarDeltaError';
+[~,idxvarimp]= sort(varimp);
+labels = vars(idxvarimp);
+
+<span class="comment">% plot the sorted scores</span>
+figure
+barh(varimp(idxvarimp),1); ylim([1 52]);
+set(gca, <span class="string">'YTickLabel'</span>,labels, <span class="string">'YTick'</span>,1:numel(labels))
+title(<span class="string">'Variable Importance'</span>); xlabel(<span class="string">'score'</span>)
+</pre><img vspace="5" hspace="5" src="HAR_04.png" alt=""> <h2>Evaluate trade-off with ROC plot<a name="8"></a></h2><p>Now let's do the trade-off between the number of predictor variables and prediction accuracy. <a href="http://en.wikipedia.org/wiki/Receiver_operating_characteristic">Receiver operating characteristic (ROC)</a> curves provides a convenient way to visualize and compare performance of binary classifiers. You plot false positive rate against true positive rate at various prediction threshold to produce the curves. If you get completely random result, the curve should follow a diagonal line. If you get a 100% accuracy, then the curve should hug the upper left corner. This means you can use the area under curve (AUC) to evaluate how well each model performs.</p><p>Let's plot ROC curves with different set of predictor variables, using "C" class as the positive class, since we can only do this one class at a time, and the previous confusion matrix shows more misclassification errors for this class than others. You can use <a href="http://www.mathworks.com/help/stats/perfcurve.html">perfcurve</a> to compute ROC curves.</p><pre class="codeinput"><span class="comment">% sort variable importance scores in a descending order</span>
+[~,idxvarimp]= sort(varimp,<span class="string">'descend'</span>);
+
+<span class="comment">% specify the positive class to use</span>
+posLabel = <span class="string">'C'</span>;
+posOrder = find(strcmp(posLabel,rfmodel.ClassNames));
+
+<span class="comment">% initialize some accumulators</span>
+colors = lines(7);
+curves = zeros(1,7);
+labels = cell(7,1);
+
+<span class="comment">% plot the ROC curves</span>
+figure
+<span class="comment">% start with the full feature set from the previous computation</span>
+[rocX,rocY,~,auc] = perfcurve(Ytest,Yscore(:,posOrder),posLabel);
+curves(7) = plot(rocX,rocY,<span class="string">'Color'</span>,colors(end,:));
+labels{7} = sprintf(<span class="string">'Features:%d, AUC: %.4f'</span>,width(Xtrain),auc);
+hold <span class="string">on</span>
+<span class="comment">% test with various number of features</span>
+featSize = [3,5,10,15,20,25];
+<span class="keyword">for</span> i = 1:length(featSize)
+    <span class="comment">% use 50 trees and fewer options to make it go faster</span>
+    model = TreeBagger(50,table2array(Xtrain(:,sort(idxvarimp(1:featSize(i))))),<span class="keyword">...</span>
+        Ytrain,<span class="string">'Method'</span>,<span class="string">'classification'</span>,<span class="string">'options'</span>,opts);
+    <span class="comment">% non parallel version</span>
+<span class="comment">%     model = TreeBagger(50,table2array(Xtrain(:,sort(idxvarimp(1:featSize(i))))),...</span>
+<span class="comment">%         Ytrain,'Method','classification');</span>
+    <span class="comment">% get the classification scores</span>
+    [~,Yscore] = predict(model,table2array(Xtest(:,sort(idxvarimp(1:featSize(i))))));
+    <span class="comment">% compute and plot the ROC curve and AUC score</span>
+    [rocX,rocY,~,auc] = perfcurve(Ytest,Yscore(:,posOrder ),posLabel);
+    curves(i) = plot(rocX,rocY,<span class="string">'Color'</span>,colors(i,:));
+    <span class="comment">% get the labels for legend</span>
+    labels{i} = sprintf(<span class="string">'Features:%02d, AUC: %.4f'</span>,featSize(i),auc);
+<span class="keyword">end</span>
+hold <span class="string">off</span>
+xlabel(<span class="string">'False posiitve rate'</span>);
+ylabel(<span class="string">'True positive rate'</span>)
+title(sprintf(<span class="string">'ROC curve for Class ''%s'', predicted vs. actual'</span>,posLabel))
+legend(curves,labels,<span class="string">'Location'</span>,<span class="string">'East'</span>);
+</pre><img vspace="5" hspace="5" src="HAR_05.png" alt=""> <h2>The reduced model with 12 features<a name="9"></a></h2><p>Based on the previous analysis, it looks like you can achieve high accuracy rate even if you use as few as 10 features. Let's say we settled for 12 features. We now know you don't have to use the data from the glove for prediction, so that's one less sensor our hypothetical end users would have to buy. Given this result, I may even consider dropping the arm band, and just stick with the belt and dumbbell sensors.</p><pre class="codeinput"><span class="comment">% model with 12 features</span>
+top12 = TreeBagger(50,table2array(Xtrain(:,sort(idxvarimp(1:12)))),<span class="keyword">...</span>
+        Ytrain,<span class="string">'Method'</span>,<span class="string">'classification'</span>,<span class="string">'options'</span>,opts);
+<span class="comment">% non-parallel version</span>
+<span class="comment">% top12 = TreeBagger(50,table2array(Xtrain(:,sort(idxvarimp(1:12)))),...</span>
+<span class="comment">%         Ytrain,'Method','classification');</span>
+
+<span class="comment">% compute the confusion matrix and prediction accuracy</span>
+Ypred = predict(top12,table2array(Xtest(:,sort(idxvarimp(1:12)))));
+C = confusionmat(Ytest,categorical(Ypred));
+disp(array2table(C,<span class="string">'VariableNames'</span>,rfmodel.ClassNames,<span class="string">'RowNames'</span>,rfmodel.ClassNames))
+fprintf(<span class="string">'Prediction accuracy on the test set: %f\n\n'</span>, sum(C(logical(eye(5))))/sum(sum(C)))
+
+<span class="comment">% show which features were included</span>
+disp(table(varimp(idxvarimp(1:12)),<span class="string">'RowNames'</span>,vars(idxvarimp(1:12)),<span class="keyword">...</span>
+    <span class="string">'VariableNames'</span>,{<span class="string">'Importance'</span>}));
+
+<span class="comment">% shut down the parallel pool</span>
+delete(poolobj);
+</pre><pre class="codeoutput">          A       B      C      D      E 
+         ____    ___    ___    ___    ___
+
+    A    1133      0      0      0      1
+    B       5    720      7      1      0
+    C       0      8    640      3      0
+    D       2      0      6    651      0
+    E       0      0      0      1    746
+
+Prediction accuracy on the test set: 0.991335
+
+                         Importance
+                         __________
+
+    roll_belt            2.7887    
+    yaw_belt             2.6094    
+    pitch_belt           2.3812    
+    gyros_arm_y          2.2761    
+    magnet_dumbbell_z    2.2583    
+    magnet_dumbbell_y    1.9959    
+    pitch_forearm         1.941    
+    gyros_forearm_y      1.7463    
+    magnet_arm_z         1.7445    
+    gyros_dumbbell_x     1.6996    
+    accel_dumbbell_y     1.6906    
+    gyros_dumbbell_z     1.6339    
+
+</pre><h2>Conclusion and the next steps - integrate your code into your app<a name="10"></a></h2><p>Despite my initial misgivings about the data, we were able to high prediction accuracy with Random Forest model with just 12 features. However, Random Forest is probably not an ideal model to implement on a mobile app given its memory foot print and slow response time.</p><p>The next step is to find a simpler models, such as <a href="http://www.mathworks.com/help/stats/mnrfit.html">logistics regression</a>, that can perform decently. You may need to do more preprocessing of the data to make it work.</p><p>Finally, I have never tried this before, but you could generate C code out of MATLAB to incorporate it into an iPhone app. Watch this webinar for more details. I believe there will be an Android version of this webinar eventually. <a href="http://www.mathworks.com/videos/matlab-to-iphone-made-easy-90834.html">MATLAB to iPhone Made Easy</a></p><p><img vspace="5" hspace="5" src="iphoneWebinar.png" alt=""> </p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Analyzing Health and Fitness Data from Wearable Devices in MATLAB
+% Collecting and tracking health and fitness data with smartphones
+% and wearable devices is about to become a mainstream as the internet
+% giants like Apple, Google and Samsung jumping into the fray. But if you 
+% collect data, what's the point if you don't analyze it!
+% 
+% I would like to use a publicly available dataset about weight lifting
+% and pretend that we are going to build a mobile app to advise end users
+% whether they are performing the exercise correctly, and if not, which
+% common mistakes they are making. We will use machine learning/predictive 
+% modeling technique called 'Random Forest' popularized by Kaggle 
+% competitions to detect user activity patterns. 
+% 
+%% Dataset to analyze
+% <http://groupware.les.inf.puc-rio.br/har Human Activity Recognition
+% (HAR)> Weight Lifting Exercise Dataset provides measurements to determine
+% "how well an activity was performed". Six subjects performed one set of 
+% 10 Unilateral Dumbbell Biceps Curl in 5 different ways. 
+% 
+% # exactly according to the specification (Class A)
+% # throwing the elbows to the front (Class B)
+% # lifting the dumbbell only halfway (Class C)
+% # lowering the dumbbell only halfway (Class D)
+% # throwing the hips to the front (Class E)
+% 
+% All together 39,242 samples with 159 variables are available in the
+% original dataset, but we will use a reduced subset of 19,622 samples. 
+% 
+% Sensors were placed on the subjects' belts, armbands, glove and
+% dumbbells, as described below:
+% 
+% <<on-body-sensing-schema.png>>
+%
+% *Citation*
+% Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. 
+% Qualitative Activity Recognition of Weight Lifting Exercises. 
+% Proceedings of 4th International Conference in Cooperation with SIGCHI 
+% (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013.
+% Read more: http://groupware.les.inf.puc-rio.br/har#ixzz34dpS6oks
+
+% load the dataset
+% T = readtable('WearableComputing_weight_lifting_exercises_biceps_curl_variations.csv','TreatAsEmpty','NA');
+T = readtable('subset.csv','TreatAsEmpty','NA'); % use a subset instead
+
+% separate the classification label from the predictor variables
+class = categorical(T.classe); T.classe = [];
+fprintf('Num samples in data   : %d\n',height(T))
+fprintf('Num predictors in data: %d\n\n',width(T))
+
+%% Partition the dataset for cross validation
+% One of the key techniques you use in predictive modeling or machine
+% learning is 
+% <http://en.wikipedia.org/wiki/Cross-validation_%28statistics%29 cross 
+% validation>. Roughly speaking, you hold out part of
+% available data for testing later, and build models using the remaining 
+% dataset. The held out set is called 'test set' and the set we will use
+% for modeling is called 'training set'. This makes it more difficult to
+% <http://en.wikipedia.org/wiki/Overfitting overfit> your model, because 
+% you can test your model against the data you didn't use in the modeling 
+% process. 
+
+% Set the random number seed to make the results repeatable
+rng('default');
+
+% Partition the dataset to a 80:20 split
+cv = cvpartition(height(T),'holdout',0.20);
+
+% Training set
+Xtrain = T(training(cv),:);
+Ytrain = class(training(cv));
+fprintf('\nTraining Set\n')
+tabulate(Ytrain)
+
+% Test set
+Xtest = T(test(cv),:);
+Ytest = class(test(cv));
+fprintf('\nTest Set\n')
+tabulate(Ytest)
+
+%% Clean and normalize the dataset
+% Raw data is never clean, so you need to check for missing values and
+% transform data into usable form. If the range of values differ
+% substantially from one variable to another, it can affect the machine
+% learning algorithms. Therefore we normalize the data as well. 
+
+%  check for missing values
+missingVals = sum(ismissing(Xtrain));
+fprintf('\nNum vars with missind vals: %d\n',sum(missingVals > 0))
+fprintf('Max num missing vals      : %d/%d\n',max(missingVals),height(Xtrain))
+fprintf('Avg num missing vals      : %d/%d\n\n',mean(missingVals(missingVals > 0)),height(Xtrain))
+
+% too many values missing for those variables to be useful
+% dropping vars with missing values 
+Xtrain = Xtrain(:,missingVals == 0); Xtest = Xtest(:,missingVals == 0);
+
+% separate users
+users = double(categorical(Xtrain.user_name));
+
+% remove user name, time stamps, etc.
+Xtrain(:,1:6) =[]; Xtest(:,1:6) =[];
+
+% apply normalization to each variable in training set
+arr = table2array(Xtrain); mu = mean(arr); sigma = std(arr);
+shiftMean2zero = bsxfun(@minus,arr,mu); 
+scalebySigma = bsxfun(@rdivide,shiftMean2zero,sigma);
+Xtrain = array2table(scalebySigma,'VariableNames',Xtrain.Properties.VariableNames);
+
+% apply normalzation to each variable in test set 
+% with mu and sigma from training set (because test set mu and sigma will
+% not be available in actual predictive use of the model).
+arr = table2array(Xtest);
+shiftMean2zero = bsxfun(@minus,arr,mu); 
+scalebySigma = bsxfun(@rdivide,shiftMean2zero,sigma);
+Xtest = array2table(scalebySigma,'VariableNames',Xtest.Properties.VariableNames);
+disp('Vars with missing vals and others removed.')
+
+%% Exploratory Data Analysis
+% You begin exploratory data analysis by plotting the variables in order to
+% get oriented with the dataset. Plots of the first four variables show
+% that:
+% 
+% # data is sorted by class - requires random reshuffling. 
+% # data points cluster around a few different mean values - 
+% indicating that measurements were taken by devices calibrated in a few 
+% different ways. The following plot shows the first variable by users, and
+% it is clear that one group used one calibration and another group used a
+% different one. 
+% # those variables exhibit a distinct patterns for Class E (colored in 
+% magenta)- those variables will be useful to isolate it.
+
+figure
+subplot(2,2,1)
+gscatter(1:height(Xtrain),Xtrain.roll_belt,Ytrain,'bgrcm','o',5,'off')
+xlim([1 height(Xtrain)]);title('Colored by 5 activity type')
+subplot(2,2,2)
+gscatter(1:height(Xtrain),Xtrain.pitch_belt,Ytrain,'bgrcm','o',5,'off')
+xlim([1 height(Xtrain)]);title('Colored by 5 activity type')
+subplot(2,2,3)
+gscatter(1:height(Xtrain),Xtrain.yaw_belt,Ytrain,'bgrcm','o',5,'off')
+xlim([1 height(Xtrain)]);title('Colored by 5 activity type')
+subplot(2,2,4)
+gscatter(1:height(Xtrain),Xtrain.total_accel_belt,Ytrain,'bgrcm','o',5,'off')
+xlim([1 height(Xtrain)]);title('Colored by 5 activity types')
+
+% plot the first variable by user
+figure
+gscatter(1:height(Xtrain),Xtrain.roll_belt,users,'bgrcmy','o',5,'off')
+ylabel('roll belt'); xlabel('index'); title('Colored by 6 users')
+
+%% Predictive Modeling with Random Forest
+% The dataset has a bit of issues with calibration. We could further
+% preprocess the data in order to remove calibration gaps. This time,
+% however, I would like to use the dataset as is and use a highly flexible
+% algorithm called 
+% <http://en.wikipedia.org/wiki/Random_forest Random Forest>. In MATLAB,
+% this algorithm is implemented in 
+% <http://www.mathworks.com/help/stats/treebagger.html TreeBagger> class
+% available in <http://www.mathworks.com/products/statistics/ Statistics 
+% Toolbox>.
+% 
+% Random Forest became popular particularly after it was used by number of 
+% winners in <http://www.kaggle.com Kaggle competitions>. It uses a large
+% ensemble of decision trees (thus 'forest') trained on different subset 
+% of data and uses majority votes of those trees to predict the result. 
+% It tend to produce a highly accurate result, but the complexity of the 
+% algorithm makes it slow and difficult to interpret.
+% 
+% To accelerate the computation, I will enable parallel option supported on
+% <http://www.mathworks.com/products/parallel-computing/ Parallel
+% Computing Toolbox>. You can comment out unnecessary code if you don't use
+% it. 
+%
+% Once the model is built, you will see the 
+% <http://www.mathworks.com/help/stats/confusionmat.html confusion matrix>
+% that compares the actual class labels to predicted class labels. If 
+% everything line up on a diagonal line, then you got 100% accuracy. 
+% Off-diagonal numbers are misclassification errors. 
+%
+% The model has a very high prediction accuracy even though we saw earlier
+% that our dataset was not as problem free as we would like. 
+
+% initialize parallel option - comment out if you don't use parallel
+poolobj = gcp('nocreate'); % don't create a new pool even if no pool exits
+if isempty(poolobj)
+    parpool('local',2)
+end
+opts = statset('UseParallel',true);
+
+% reshuffle the dataset
+randidx = randperm(height(Xtrain));
+Xtrain = Xtrain(randidx,:);
+Ytrain = Ytrain(randidx);
+
+% create a random forest model with 100 trees, parallel enabled...
+rfmodel = TreeBagger(100,table2array(Xtrain),Ytrain,'options',opts,...
+    'Method','classification','oobvarimp','on');
+% non-parallel version of the same model
+% rfmodel = TreeBagger(100,table2array(Xtrain),Ytrain,...
+%     'Method','classification','oobpre','on','oobvarimp','on');
+
+% predict the class labels for test set
+[Ypred,Yscore]= predict(rfmodel,table2array(Xtest));
+
+% compute the confusion matrix and prediction accuracy
+C = confusionmat(Ytest,categorical(Ypred));
+disp(array2table(C,'VariableNames',rfmodel.ClassNames,'RowNames',rfmodel.ClassNames))
+fprintf('Prediction accuracy on test set: %f\n\n', sum(C(logical(eye(5))))/sum(sum(C)))
+
+%% Plot misclassification errors by number of trees
+% I happened to pick 100 trees in the model, but you can check the
+% misclassification errors relative to the number of trees used in
+% prediction. The plot shows that 100 is an overkill - we could use fewer 
+% trees and that will make it go faster. 
+
+figure
+plot(oobError(rfmodel));
+xlabel('Number of Grown Trees');
+ylabel('Out-of-Bag Classification Error');
+
+%% Variable Importance
+% One major criticism of Random Forest is that it is a black box algorithms
+% and not easy to understand what it is doing. However, Random Forest can
+% provide variable importance measure, which correspond to the change in
+% prediction error with and without the presence of that variable in the
+% model. 
+%
+% For our hypothetical weight lifting trainer mobile app, Random Forest
+% would be too cumbersome and slow to implement, so you want to use a
+% simpler prediction model with fewer predictor variables. Random Forest
+% can help you with selecting which predictors you can drop without
+% sacrificing the prediction accuracy too much. 
+%
+% Let's see how you can do this with TreeBagger. 
+
+% get the variable importance scores and sort it. 
+vars = Xtrain.Properties.VariableNames;
+% because we turned 'oobvarimp' to 'on', the model contains 
+% OOBPermutedVarDeltaError that acts as variable importance measure
+varimp = rfmodel.OOBPermutedVarDeltaError';
+[~,idxvarimp]= sort(varimp);
+labels = vars(idxvarimp);
+
+% plot the sorted scores
+figure
+barh(varimp(idxvarimp),1); ylim([1 52]);
+set(gca, 'YTickLabel',labels, 'YTick',1:numel(labels))
+title('Variable Importance'); xlabel('score')
+
+%% Evaluate trade-off with ROC plot
+% Now let's do the trade-off between the number of predictor variables and
+% prediction accuracy. 
+% <http://en.wikipedia.org/wiki/Receiver_operating_characteristic 
+% Receiver operating characteristic (ROC)> curves provides a convenient way
+% to visualize and compare performance of binary classifiers. You plot 
+% false positive rate against true positive rate at various prediction
+% threshold to produce the curves. If you get completely random result, the
+% curve should follow a diagonal line. If you get a 100% accuracy, then the
+% curve should hug the upper left corner. This means you can use the area 
+% under curve (AUC) to evaluate how well each model performs. 
+%
+% Let's plot ROC curves with different set of predictor variables, using
+% "C" class as the positive class, since we can only do this one class at a
+% time, and the previous confusion matrix shows more misclassification
+% errors for this class than others. You can use 
+% <http://www.mathworks.com/help/stats/perfcurve.html perfcurve> to compute
+% ROC curves.
+
+% sort variable importance scores in a descending order
+[~,idxvarimp]= sort(varimp,'descend');
+
+% specify the positive class to use
+posLabel = 'C';
+posOrder = find(strcmp(posLabel,rfmodel.ClassNames));
+
+% initialize some accumulators
+colors = lines(7);
+curves = zeros(1,7);
+labels = cell(7,1);
+
+% plot the ROC curves
+figure
+% start with the full feature set from the previous computation
+[rocX,rocY,~,auc] = perfcurve(Ytest,Yscore(:,posOrder),posLabel);
+curves(7) = plot(rocX,rocY,'Color',colors(end,:));
+labels{7} = sprintf('Features:%d, AUC: %.4f',width(Xtrain),auc); 
+hold on
+% test with various number of features
+featSize = [3,5,10,15,20,25];
+for i = 1:length(featSize)
+    % use 50 trees and fewer options to make it go faster
+    model = TreeBagger(50,table2array(Xtrain(:,sort(idxvarimp(1:featSize(i))))),...
+        Ytrain,'Method','classification','options',opts);
+    % non parallel version
+%     model = TreeBagger(50,table2array(Xtrain(:,sort(idxvarimp(1:featSize(i))))),...
+%         Ytrain,'Method','classification');
+    % get the classification scores
+    [~,Yscore] = predict(model,table2array(Xtest(:,sort(idxvarimp(1:featSize(i))))));
+    % compute and plot the ROC curve and AUC score
+    [rocX,rocY,~,auc] = perfcurve(Ytest,Yscore(:,posOrder ),posLabel);
+    curves(i) = plot(rocX,rocY,'Color',colors(i,:));
+    % get the labels for legend
+    labels{i} = sprintf('Features:%02d, AUC: %.4f',featSize(i),auc); 
+end
+hold off
+xlabel('False posiitve rate');
+ylabel('True positive rate')
+title(sprintf('ROC curve for Class ''%s'', predicted vs. actual',posLabel))
+legend(curves,labels,'Location','East');
+
+%% The reduced model with 12 features
+% Based on the previous analysis, it looks like you can achieve high
+% accuracy rate even if you use as few as 10 features. Let's say we settled
+% for 12 features. We now know you don't have to use the data from the
+% glove for prediction, so that's one less sensor our hypothetical end
+% users would have to buy. Given this result, I may even consider dropping
+% the arm band, and just stick with the belt and dumbbell sensors. 
+
+% model with 12 features
+top12 = TreeBagger(50,table2array(Xtrain(:,sort(idxvarimp(1:12)))),...
+        Ytrain,'Method','classification','options',opts);
+% non-parallel version    
+% top12 = TreeBagger(50,table2array(Xtrain(:,sort(idxvarimp(1:12)))),...
+%         Ytrain,'Method','classification');
+
+% compute the confusion matrix and prediction accuracy
+Ypred = predict(top12,table2array(Xtest(:,sort(idxvarimp(1:12)))));
+C = confusionmat(Ytest,categorical(Ypred));
+disp(array2table(C,'VariableNames',rfmodel.ClassNames,'RowNames',rfmodel.ClassNames))
+fprintf('Prediction accuracy on the test set: %f\n\n', sum(C(logical(eye(5))))/sum(sum(C)))
+
+% show which features were included
+disp(table(varimp(idxvarimp(1:12)),'RowNames',vars(idxvarimp(1:12)),...
+    'VariableNames',{'Importance'}));
+
+% shut down the parallel pool 
+delete(poolobj);
+
+%% Conclusion and the next steps - integrate your code into your app
+% Despite my initial misgivings about the data, we were able to high
+% prediction accuracy with Random Forest model with just 12 features.
+% However, Random Forest is probably not an ideal model to implement on a
+% mobile app given its memory foot print and slow response time. 
+%
+% The next step is to find a simpler models, such as 
+% <http://www.mathworks.com/help/stats/mnrfit.html logistics regression>,
+% that can perform decently. You may need to do more preprocessing of the 
+% data to make it work. 
+%
+% Finally, I have never tried this before, but you could generate C code
+% out of MATLAB to incorporate it into an iPhone app. Watch this webinar
+% for more details. I believe there will be an Android version of this
+% webinar eventually. 
+% <http://www.mathworks.com/videos/matlab-to-iphone-made-easy-90834.html 
+% MATLAB to iPhone Made Easy> 
+%
+% <<iphoneWebinar.png>>
+
+##### SOURCE END #####
+--></body></html>
