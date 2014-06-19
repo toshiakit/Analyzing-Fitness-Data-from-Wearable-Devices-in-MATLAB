@@ -163,7 +163,7 @@ Random Forest became popular particularly after it was used by number of winners
 
 To accelerate the computation, I will enable parallel option supported on [Parallel Computing Toolbox](http://www.mathworks.com/products/parallel-computing/). You can comment out unnecessary code if you don't use it.
 
-Once the model is built, you will see the [confusion matrix](http://www.mathworks.com/help/stats/confusionmat.html) that compares the actual class labels to predicted class labels. If everything line up on a diagonal line, then you got 100% accuracy. Off-diagonal numbers are misclassification errors.
+Once the model is built, you will see the [confusion matrix](http://www.mathworks.com/help/stats/confusionmat.html) that compares the actual class labels to predicted class labels. If everything lines up on a diagonal line, then you got 100% accuracy. Off-diagonal numbers are misclassification errors.
 
 The model has a very high prediction accuracy even though we saw earlier that our dataset was not as problem free as we would like.
 
