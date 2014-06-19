@@ -159,7 +159,7 @@ Predictive Modeling with Random Forest
 
 The dataset has a bit of issues with calibration. We could further preprocess the data in order to remove calibration gaps. This time, however, I would like to use the dataset as is and use a highly flexible algorithm called [Random Forest](http://en.wikipedia.org/wiki/Random_forest). In MATLAB, this algorithm is implemented in [TreeBagger](http://www.mathworks.com/help/stats/treebagger.html) class available in [Statistics Toolbox](http://www.mathworks.com/products/statistics/).
 
-Random Forest became popular particularly after it was used by number of winners in [Kaggle competitions](http://www.kaggle.com/). It uses a large ensemble of decision trees (thus 'forest') trained on random subsets of data and uses majority votes of those trees to predict the result. It tend to produce a highly accurate result, but the complexity of the algorithm makes it slow and difficult to interpret.
+Random Forest became popular particularly after it was used by number of winners in [Kaggle competitions](http://www.kaggle.com/). It uses a large ensemble of decision trees (thus 'forest') trained on random subsets of data and uses majority votes of those trees to predict the result. It tends to produce a highly accurate result, but the complexity of the algorithm makes it slow and difficult to interpret.
 
 To accelerate the computation, I will enable parallel option supported on [Parallel Computing Toolbox](http://www.mathworks.com/products/parallel-computing/). You can comment out unnecessary code if you don't use it.
 
