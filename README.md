@@ -1,14 +1,14 @@
 Analyzing Fitness Data from Wearable Devices in MATLAB
 ======================================================
 
-Collecting and tracking health and fitness data with smartphones and wearable devices is about to become a mainstream as the internet giants like Apple, Google and Samsung jumping into the fray. But if you collect data, what's the point if you don't analyze it!
+Collecting and tracking health and fitness data with smartphones and wearable devices is about to go mainstream as the internet giants like Apple, Google and Samsung jumping into the fray. But if you collect data, what's the point if you don't analyze it!
 
 I would like to use a publicly available dataset about weight lifting and pretend that we are going to build a mobile app to advise end users whether they are performing the exercise correctly, and if not, which common mistakes they are making. We will use machine learning/predictive modeling technique called 'Random Forest' popularized by Kaggle competitions to detect user activity patterns.
 
 Dataset to analyze
 ------------------
 
-[Human Activity Recognition (HAR)](http://groupware.les.inf.puc-rio.br/har) Weight Lifting Exercise Dataset provides measurements to determine "how well an activity was performed". Six subjects performed one set of 10 Unilateral Dumbbell Biceps Curl in 5 different ways.
+[Human Activity Recognition (HAR)](http://groupware.les.inf.puc-rio.br/har) Weight Lifting Exercise Dataset provides measurements to determine "how well an activity was performed". 6  subjects performed 1 set of 10 Unilateral Dumbbell Biceps Curl in 5 different ways.
 
 1. exactly according to the specification (Class A)
 2. throwing the elbows to the front (Class B)
@@ -85,7 +85,7 @@ Raw data is never clean, so you need to check for missing values and transform d
 ```
 %  check for missing values
 missingVals = sum(ismissing(Xtrain));
-fprintf('\nNum vars with missind vals: %d\n',sum(missingVals > 0))
+fprintf('\nNum vars with missing vals: %d\n',sum(missingVals > 0))
 fprintf('Max num missing vals      : %d/%d\n',max(missingVals),height(Xtrain))
 fprintf('Avg num missing vals      : %d/%d\n\n',mean(missingVals(missingVals > 0)),height(Xtrain))
 
@@ -115,7 +115,7 @@ Xtest = array2table(scalebySigma,'VariableNames',Xtest.Properties.VariableNames)
 disp('Vars with missing vals and others removed.')
 ```
 ```
-Num vars with missind vals: 100
+Num vars with missing vals: 100
 Max num missing vals      : 15365/15698
 Avg num missing vals      : 15365/15698
 
@@ -129,7 +129,7 @@ You begin exploratory data analysis by plotting the variables in order to get or
 
 1. data is sorted by class - requires random reshuffling.
 2. data points cluster around a few different mean values - indicating that measurements were taken by devices calibrated in a few different ways. The following plot shows the first variable by users, and it is clear that one group used one calibration and another group used a different one.
-3. those variables exhibit a distinct patterns for Class E (colored in magenta)- those variables will be useful to isolate it.
+3. those variables exhibit a distinct patterns for Class E (colored in magenta) - those variables will be useful to isolate it.
 
 ```
 figure
@@ -159,7 +159,7 @@ Predictive Modeling with Random Forest
 
 The dataset has a bit of issues with calibration. We could further preprocess the data in order to remove calibration gaps. This time, however, I would like to use the dataset as is and use a highly flexible algorithm called [Random Forest](http://en.wikipedia.org/wiki/Random_forest). In MATLAB, this algorithm is implemented in [TreeBagger](http://www.mathworks.com/help/stats/treebagger.html) class available in [Statistics Toolbox](http://www.mathworks.com/products/statistics/).
 
-Random Forest became popular particularly after it was used by number of winners in [Kaggle competitions](http://www.kaggle.com/). It uses a large ensemble of decision trees (thus 'forest') trained on different subset of data and uses majority votes of those trees to predict the result. It tend to produce a highly accurate result, but the complexity of the algorithm makes it slow and difficult to interpret.
+Random Forest became popular particularly after it was used by number of winners in [Kaggle competitions](http://www.kaggle.com/). It uses a large ensemble of decision trees (thus 'forest') trained on random subsets of data and uses majority votes of those trees to predict the result. It tend to produce a highly accurate result, but the complexity of the algorithm makes it slow and difficult to interpret.
 
 To accelerate the computation, I will enable parallel option supported on [Parallel Computing Toolbox](http://www.mathworks.com/products/parallel-computing/). You can comment out unnecessary code if you don't use it.
 
@@ -236,7 +236,7 @@ ylabel('Out-of-Bag Classification Error');
 Variable Importance
 -------------------
 
-One major criticism of Random Forest is that it is a black box algorithms and not easy to understand what it is doing. However, Random Forest can provide variable importance measure, which correspond to the change in prediction error with and without the presence of that variable in the model.
+One major criticism of Random Forest is that it is a black box algorithm and not easy to understand what it is doing. However, Random Forest can provide variable importance measure, which corresponds to the change in prediction error with and without the presence of a given variable in the model.
 
 For our hypothetical weight lifting trainer mobile app, Random Forest would be too cumbersome and slow to implement, so you want to use a simpler prediction model with fewer predictor variables. Random Forest can help you with selecting which predictors you can drop without sacrificing the prediction accuracy too much.
 
@@ -262,7 +262,7 @@ title('Variable Importance'); xlabel('score')
 Evaluate trade-off with ROC plot
 --------------------------------
 
-Now let's do the trade-off between the number of predictor variables and prediction accuracy. [Receiver operating characteristic (ROC)](http://en.wikipedia.org/wiki/Receiver_operating_characteristic) curves provides a convenient way to visualize and compare performance of binary classifiers. You plot false positive rate against true positive rate at various prediction threshold to produce the curves. If you get completely random result, the curve should follow a diagonal line. If you get a 100% accuracy, then the curve should hug the upper left corner. This means you can use the area under curve (AUC) to evaluate how well each model performs.
+Now let's do the trade-off between the number of predictor variables and prediction accuracy. [Receiver operating characteristic (ROC)](http://en.wikipedia.org/wiki/Receiver_operating_characteristic) plot provides a convenient way to visualize and compare performance of binary classifiers. You plot false positive rate against true positive rate at various prediction threshold to produce the curves. If you get completely random result, the curve should follow a diagonal line. If you get a 100% accuracy, then the curve should hug the upper left corner. This means you can use the area under curve (AUC) to evaluate how well each model performs.
 
 Let's plot ROC curves with different set of predictor variables, using "C" class as the positive class, since we can only do this one class at a time, and the previous confusion matrix shows more misclassification errors for this class than others. You can use [perfcurve](http://www.mathworks.com/help/stats/perfcurve.html) to compute ROC curves.
 
@@ -271,8 +271,8 @@ Let's plot ROC curves with different set of predictor variables, using "C" class
 [~,idxvarimp]= sort(varimp,'descend');
 
 % specify the positive class to use
-posLabel = 'C';
-posOrder = find(strcmp(posLabel,rfmodel.ClassNames));
+posClass = 'C';
+posIdx = find(strcmp(posLabel,categories(Ytrain)));
 
 % initialize some accumulators
 colors = lines(7);
@@ -282,7 +282,7 @@ labels = cell(7,1);
 % plot the ROC curves
 figure
 % start with the full feature set from the previous computation
-[rocX,rocY,~,auc] = perfcurve(Ytest,Yscore(:,posOrder),posLabel);
+[rocX,rocY,~,auc] = perfcurve(Ytest,Yscore(:,posIdx),posClass);
 curves(7) = plot(rocX,rocY,'Color',colors(end,:));
 labels{7} = sprintf('Features:%d, AUC: %.4f',width(Xtrain),auc); 
 hold on
@@ -298,7 +298,7 @@ for i = 1:length(featSize)
     % get the classification scores
     [~,Yscore] = predict(model,table2array(Xtest(:,sort(idxvarimp(1:featSize(i))))));
     % compute and plot the ROC curve and AUC score
-    [rocX,rocY,~,auc] = perfcurve(Ytest,Yscore(:,posOrder ),posLabel);
+    [rocX,rocY,~,auc] = perfcurve(Ytest,Yscore(:,posIdx),posClass);
     curves(i) = plot(rocX,rocY,'Color',colors(i,:));
     % get the labels for legend
     labels{i} = sprintf('Features:%02d, AUC: %.4f',featSize(i),auc); 
@@ -306,7 +306,7 @@ end
 hold off
 xlabel('False posiitve rate');
 ylabel('True positive rate')
-title(sprintf('ROC curve for Class ''%s'', predicted vs. actual',posLabel))
+title(sprintf('ROC curve for Class ''%s'', predicted vs. actual',posClass))
 legend(curves,labels,'Location','East');
 ```
 ![ROC Plot](html/HAR_05.png)
@@ -369,11 +369,11 @@ Prediction accuracy on the test set: 0.991335
 Conclusion and the next steps - integrate your code into your app
 ----------------------------------------------------------------
 
-Despite my initial misgivings about the data, we were able to high prediction accuracy with Random Forest model with just 12 features. However, Random Forest is probably not an ideal model to implement on a mobile app given its memory foot print and slow response time.
+Despite my initial misgivings about the data, we were able to maintain high prediction accuracy with Random Forest model with just 12 features. However, Random Forest is probably not an ideal model to implement on a mobile app given its memory foot print and slow response time.
 
 The next step is to find a simpler models, such as [logistics regression](http://www.mathworks.com/help/stats/mnrfit.html), that can perform decently. You may need to do more preprocessing of the data to make it work.
 
-Finally, I have never tried this before, but you could generate C code out of MATLAB to incorporate it into an iPhone app. Watch this webinar for more details. I believe there will be an Android version of this webinar eventually. [MATLAB to iPhone Made Easy](http://www.mathworks.com/videos/matlab-to-iphone-made-easy-90834.html)
+Finally, I have never tried this before, but you could generate C code out of MATLAB to incorporate it into an iPhone app. Watch this webinar [MATLAB to iPhone Made Easy](http://www.mathworks.com/videos/matlab-to-iphone-made-easy-90834.html) for more details. I believe there will be an Android version of this webinar eventually.
 
 ![MATLAB to iPhone Made Easy Webinar](html/iphoneWebinar.png)
 
